@@ -36,7 +36,7 @@
         </dependency>
         <dependency>
             <groupId>com.yupi</groupId>
-            <artifactId>yuoj-backend-service-client</artifactId>
+            <artifactId>yuoj-backend-api</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>

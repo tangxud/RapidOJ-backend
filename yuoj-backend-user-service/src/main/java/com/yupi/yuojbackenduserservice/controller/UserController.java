@@ -9,19 +9,20 @@ import com.yupi.yuojbackendcommon.common.ResultUtils;
 import com.yupi.yuojbackendcommon.constant.UserConstant;
 import com.yupi.yuojbackendcommon.exception.BusinessException;
 import com.yupi.yuojbackendcommon.exception.ThrowUtils;
-import com.yupi.yuojbackendmodel.model.dto.user.*;
+import com.yupi.yuojbackendmodel.model.dto.user.UserAddRequest;
+import com.yupi.yuojbackendmodel.model.dto.user.UserQueryRequest;
+import com.yupi.yuojbackendmodel.model.dto.user.UserUpdateMyRequest;
+import com.yupi.yuojbackendmodel.model.dto.user.UserUpdateRequest;
+import com.yupi.yuojbackendmodel.model.entity.LoginUser;
 import com.yupi.yuojbackendmodel.model.entity.User;
-import com.yupi.yuojbackendmodel.model.vo.LoginUserVO;
 import com.yupi.yuojbackendmodel.model.vo.UserVO;
 import com.yupi.yuojbackenduserservice.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -41,71 +42,15 @@ public class UserController {
     // region 登录相关
 
     /**
-     * 用户注册
-     *
-     * @param userRegisterRequest
-     * @return
-     */
-    @PostMapping("/register")
-    public BaseResponse<Long> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
-        if (userRegisterRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        String userAccount = userRegisterRequest.getUserAccount();
-        String userPassword = userRegisterRequest.getUserPassword();
-        String checkPassword = userRegisterRequest.getCheckPassword();
-        if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword)) {
-            return null;
-        }
-        long result = userService.userRegister(userAccount, userPassword, checkPassword);
-        return ResultUtils.success(result);
-    }
-
-    /**
-     * 用户登录
-     *
-     * @param userLoginRequest
-     * @param request
-     * @return
-     */
-    @PostMapping("/login")
-    public BaseResponse<LoginUserVO> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
-        if (userLoginRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        String userAccount = userLoginRequest.getUserAccount();
-        String userPassword = userLoginRequest.getUserPassword();
-        if (StringUtils.isAnyBlank(userAccount, userPassword)) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        LoginUserVO loginUserVO = userService.userLogin(userAccount, userPassword, request);
-        return ResultUtils.success(loginUserVO);
-    }
-
-    /**
-     * 用户注销
-     *
-     * @param request
-     * @return
-     */
-    @PostMapping("/logout")
-    public BaseResponse<Boolean> userLogout(HttpServletRequest request) {
-        if (request == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        boolean result = userService.userLogout(request);
-        return ResultUtils.success(result);
-    }
-
-    /**
      * 获取当前登录用户
      *
      * @param request
      * @return
      */
     @GetMapping("/get/login")
-    public BaseResponse<LoginUserVO> getLoginUser(HttpServletRequest request) {
+    public BaseResponse<LoginUser> getLoginUser(HttpServletRequest request) {
         User user = userService.getLoginUser(request);
+        log.info("user : {}", user);
         return ResultUtils.success(userService.getLoginUserVO(user));
     }
 

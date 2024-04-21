@@ -2,12 +2,15 @@ package com.yupi.yuojbackendserviceclient.service;
 
 import com.yupi.yuojbackendcommon.common.ErrorCode;
 import com.yupi.yuojbackendcommon.exception.BusinessException;
+import com.yupi.yuojbackendmodel.model.entity.LoginUser;
 import com.yupi.yuojbackendmodel.model.entity.User;
 import com.yupi.yuojbackendmodel.model.enums.UserRoleEnum;
 import com.yupi.yuojbackendmodel.model.vo.UserVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,6 +43,23 @@ public interface UserFeignClient {
      */
     @GetMapping("/get/ids")
     List<User> listByIds(@RequestParam("idList") Collection<Long> idList);
+
+    /**
+     * 根据用户账户获取用户信息
+     * @param userAccount
+     * @return
+     */
+    @GetMapping("/get/userInfo")
+    LoginUser getUserInfoByUserAccount(@RequestParam("userAccount") String userAccount);
+
+
+    /**
+     *
+     * @param user
+     * @return
+     */
+    @PostMapping("/register")
+    boolean register(@RequestBody User user);
 
     /**
      * 获取当前登录用户
@@ -82,5 +102,4 @@ public interface UserFeignClient {
         BeanUtils.copyProperties(user, userVO);
         return userVO;
     }
-
 }

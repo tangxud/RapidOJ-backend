@@ -1,12 +1,11 @@
 package com.yupi.yuojbackenduserservice.controller.inner;
 
+import com.yupi.yuojbackendcommon.utils.StringUtils;
+import com.yupi.yuojbackendmodel.model.entity.LoginUser;
 import com.yupi.yuojbackendmodel.model.entity.User;
 import com.yupi.yuojbackendserviceclient.service.UserFeignClient;
 import com.yupi.yuojbackenduserservice.service.UserService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.Collection;
@@ -42,6 +41,34 @@ public class UserInnerController implements UserFeignClient {
     @GetMapping("/get/ids")
     public List<User> listByIds(@RequestParam("idList") Collection<Long> idList) {
         return userService.listByIds(idList);
+    }
+
+    /**
+     * 根据账户查询用户信息
+     * @param userAccount
+     * @return
+     */
+    @Override
+    @GetMapping("/get/userInfo")
+    public LoginUser getUserInfoByUserAccount(String userAccount) {
+        if (StringUtils.isAnyBlank(userAccount)) {
+            return null;
+        }
+        LoginUser loginUser = new LoginUser();
+        loginUser.setUser(userService.getUserByUserAccount(userAccount));
+        return loginUser;
+    }
+
+    @Override
+    @PostMapping("/register")
+    public boolean register(@RequestBody User user) {
+        if (user == null) {
+            return false;
+        }
+        if (!userService.checkUserAccountUnique(user)) {
+            return false;
+        }
+        return userService.userRegister(user);
     }
 
 }

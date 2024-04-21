@@ -16,7 +16,7 @@ import javax.annotation.PostConstruct;
 @Component
 public class InitRabbitMqBean {
 
-    @Value("${spring.rabbitmq.host:localhost}")
+    @Value("${spring.rabbitmq.host}")
     private String host;
 
     @PostConstruct

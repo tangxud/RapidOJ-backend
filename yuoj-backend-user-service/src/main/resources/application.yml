@@ -11,11 +11,11 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-  # session ??
-  session:
-    store-type: redis
-    # 30 ???
-    timeout: 2592000
+#  # session ??
+#  session:
+#    store-type: redis
+#    # 30 ???
+#    timeout: 2592000
   # ?????
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -42,10 +42,10 @@ server:
   servlet:
     context-path: /api/user
     # cookie 30 ???
-    session:
-      cookie:
-        max-age: 2592000
-        path: /api
+#    session:
+#      cookie:
+#        max-age: 2592000
+#        path: /api
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false

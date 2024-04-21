@@ -8,6 +8,10 @@ spring:
         server-addr: nacos:8848
     gateway:
       routes:
+        - id: yuoj-backend-auth
+          uri: lb://yuoj-backend-auth
+          predicates:
+            - Path=/api/auth/**
         - id: yuoj-backend-user-service
           uri: lb://yuoj-backend-user-service
           predicates:

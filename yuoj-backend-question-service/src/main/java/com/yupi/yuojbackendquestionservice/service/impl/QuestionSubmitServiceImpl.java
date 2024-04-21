@@ -19,17 +19,14 @@ import com.yupi.yuojbackendquestionservice.mapper.QuestionSubmitMapper;
 import com.yupi.yuojbackendquestionservice.rabbitmq.MyMessageProducer;
 import com.yupi.yuojbackendquestionservice.service.QuestionService;
 import com.yupi.yuojbackendquestionservice.service.QuestionSubmitService;
-import com.yupi.yuojbackendserviceclient.service.JudgeFeignClient;
 import com.yupi.yuojbackendserviceclient.service.UserFeignClient;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
@@ -47,9 +44,9 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
     @Resource
     private UserFeignClient userFeignClient;
 
-    @Resource
-    @Lazy
-    private JudgeFeignClient judgeFeignClient;
+//    @Resource
+//    @Lazy
+//    private JudgeFeignClient judgeFeignClient;
 
     @Resource
     private MyMessageProducer myMessageProducer;

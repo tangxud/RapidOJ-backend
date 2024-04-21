@@ -15,6 +15,17 @@
         <java.version>1.8</java.version>
     </properties>
     <dependencies>
+        <!-- Redis 相关依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <!-- JWT 相关依赖 -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.9.1</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -36,13 +47,19 @@
         </dependency>
         <dependency>
             <groupId>com.yupi</groupId>
-            <artifactId>yuoj-backend-service-client</artifactId>
+            <artifactId>yuoj-backend-api</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.fastjson2</groupId>
+            <artifactId>fastjson2</artifactId>
+            <version>2.0.44</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
