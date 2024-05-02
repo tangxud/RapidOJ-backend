@@ -54,6 +54,11 @@ public class UserInnerController implements UserFeignClient {
         if (StringUtils.isAnyBlank(userAccount)) {
             return null;
         }
+        // todo 测试openFegin降级效果
+//        boolean test = true;
+//        if (test) {
+//            int i = 10/0;
+//        }
         LoginUser loginUser = new LoginUser();
         loginUser.setUser(userService.getUserByUserAccount(userAccount));
         return loginUser;

@@ -6,6 +6,7 @@ import com.yupi.yuojbackendmodel.model.entity.LoginUser;
 import com.yupi.yuojbackendmodel.model.entity.User;
 import com.yupi.yuojbackendmodel.model.enums.UserRoleEnum;
 import com.yupi.yuojbackendmodel.model.vo.UserVO;
+import com.yupi.yuojbackendserviceclient.factory.RemoteUserFallbackFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +26,7 @@ import static com.yupi.yuojbackendcommon.constant.UserConstant.USER_LOGIN_STATE;
  * @author <a href="https://github.com/liyupi">程序员鱼皮</a>
  * @from <a href="https://yupi.icu">编程导航知识星球</a>
  */
-@FeignClient(name = "yuoj-backend-user-service", path = "/api/user/inner")
+@FeignClient(name = "yuoj-backend-user-service", path = "/api/user/inner", fallbackFactory = RemoteUserFallbackFactory.class)
 public interface UserFeignClient {
 
     /**

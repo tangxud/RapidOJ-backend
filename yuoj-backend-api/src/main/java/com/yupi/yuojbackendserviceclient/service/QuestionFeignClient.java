@@ -3,6 +3,7 @@ package com.yupi.yuojbackendserviceclient.service;
 
 import com.yupi.yuojbackendmodel.model.entity.Question;
 import com.yupi.yuojbackendmodel.model.entity.QuestionSubmit;
+import com.yupi.yuojbackendserviceclient.factory.RemoteQuestionFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 * @description 针对表【question(题目)】的数据库操作Service
 * @createDate 2023-08-07 20:58:00
 */
-@FeignClient(name = "yuoj-backend-question-service", path = "/api/question/inner")
+@FeignClient(name = "yuoj-backend-question-service", path = "/api/question/inner", fallbackFactory = RemoteQuestionFallbackFactory.class)
 public interface QuestionFeignClient {
 
     @GetMapping("/get/id")

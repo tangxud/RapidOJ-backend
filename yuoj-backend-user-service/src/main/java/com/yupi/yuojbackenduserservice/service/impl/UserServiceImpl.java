@@ -1,6 +1,5 @@
 package com.yupi.yuojbackenduserservice.service.impl;
 
-import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -80,8 +79,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (Boolean.FALSE.equals(redisTemplate.hasKey(tokenKey))){
             return null;
         }
-        Object object = redisTemplate.opsForValue().get(tokenKey);
-        LoginUser loginUser = JSON.parseObject(object.toString(), LoginUser.class);
+        LoginUser loginUser = (LoginUser) redisTemplate.opsForValue().get(tokenKey);
         return loginUser.getUser();
 //        // 先判断是否已登录
 //        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);

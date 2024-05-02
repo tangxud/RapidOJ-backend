@@ -1,5 +1,13 @@
 spring:
   cloud:
+    sentinel:
+      transport:
+        dashboard: localhost:8180
+      scg: #配置限流之后，响应内容
+        fallback:
+          mode: response
+          response-status: 426
+          response-body: 限流了
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
@@ -21,6 +29,11 @@ spring:
           uri: lb://yuoj-backend-judge-service
           predicates:
             - Path=/api/judge/**
+      default-filters:
+        - name: AddBase64EncodedRequestHeader
+          args:
+            headerName: origin
+            value: gateway
   application:
     name: yuoj-backend-gateway
   main:

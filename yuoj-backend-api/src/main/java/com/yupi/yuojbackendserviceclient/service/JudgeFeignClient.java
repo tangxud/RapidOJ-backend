@@ -2,6 +2,7 @@ package com.yupi.yuojbackendserviceclient.service;
 
 
 import com.yupi.yuojbackendmodel.model.entity.QuestionSubmit;
+import com.yupi.yuojbackendserviceclient.factory.RemoteJudgeFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 /**
  * 判题服务
  */
-@FeignClient(name = "yuoj-backend-judge-service", path = "/api/judge/inner")
+@FeignClient(name = "yuoj-backend-judge-service", path = "/api/judge/inner", fallbackFactory = RemoteJudgeFallbackFactory.class)
 public interface JudgeFeignClient {
 
     /**

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Enumeration;
 import java.util.List;
 
 /**
@@ -49,8 +50,13 @@ public class UserController {
      */
     @GetMapping("/get/login")
     public BaseResponse<LoginUser> getLoginUser(HttpServletRequest request) {
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            String headerValue = request.getHeader(headerName);
+            log.info("{}:{}", headerName, headerValue);
+        }
         User user = userService.getLoginUser(request);
-        log.info("user : {}", user);
         return ResultUtils.success(userService.getLoginUserVO(user));
     }
 

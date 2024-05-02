@@ -7,7 +7,6 @@ import com.yupi.yuojbackendmodel.model.entity.User;
 import com.yupi.yuojbackendserviceclient.service.UserFeignClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
@@ -25,8 +24,6 @@ public class SysLoginService {
 
     @Resource
     private UserFeignClient userFeignClient;
-    @Autowired
-    private RedisService redisService;
 
     public LoginUser login(String userAccount, String userPassword) {
         // 1. 校验

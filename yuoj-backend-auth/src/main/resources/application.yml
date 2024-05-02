@@ -15,6 +15,9 @@ spring:
 #    # 环境配置
 #    active: dev
   cloud:
+    sentinel:
+      transport:
+        dashboard: localhost:8180
     nacos:
       discovery:
         # 服务注册地址
@@ -27,3 +30,9 @@ spring:
 
 knife4j:
   enable: true
+
+feign:
+  sentinel:
+    enabled: true
+
+
