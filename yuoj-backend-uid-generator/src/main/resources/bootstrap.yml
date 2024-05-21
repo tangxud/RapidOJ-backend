@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: yuoj-backend-question-service
+  profiles:
+    active: dev
+  # 支持 swagger3
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+
+server:
+  port: 8106
+  servlet:
+    context-path: /api/uid
+
+mybatis:
+  mapper-locations: classpath*:mapper/*.xml
+  type-aliases-package: com.yupi.yuojbackenduidgenerator.domain
+
+knife4j:
+  enable: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: 'health,info,metrics'
+
+feign:
+  sentinel:
+    enabled: true
+
+
