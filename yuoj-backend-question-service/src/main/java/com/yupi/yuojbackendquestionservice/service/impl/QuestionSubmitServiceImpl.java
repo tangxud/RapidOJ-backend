@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yupi.yuojbackendcommon.common.ErrorCode;
+import com.yupi.yuojbackendcommon.constant.CacheConstants;
 import com.yupi.yuojbackendcommon.constant.CommonConstant;
 import com.yupi.yuojbackendcommon.exception.BusinessException;
 import com.yupi.yuojbackendcommon.utils.SqlUtils;
@@ -14,19 +15,25 @@ import com.yupi.yuojbackendmodel.model.entity.QuestionSubmit;
 import com.yupi.yuojbackendmodel.model.entity.User;
 import com.yupi.yuojbackendmodel.model.enums.QuestionSubmitLanguageEnum;
 import com.yupi.yuojbackendmodel.model.enums.QuestionSubmitStatusEnum;
+import com.yupi.yuojbackendmodel.model.rabbitmq.QuestionSubmitMessage;
 import com.yupi.yuojbackendmodel.model.vo.QuestionSubmitVO;
 import com.yupi.yuojbackendquestionservice.mapper.QuestionSubmitMapper;
 import com.yupi.yuojbackendquestionservice.rabbitmq.MyMessageProducer;
 import com.yupi.yuojbackendquestionservice.service.QuestionService;
 import com.yupi.yuojbackendquestionservice.service.QuestionSubmitService;
+import com.yupi.yuojbackendserviceclient.service.UidFeignClient;
 import com.yupi.yuojbackendserviceclient.service.UserFeignClient;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -37,12 +44,18 @@ import java.util.stream.Collectors;
 @Service
 public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper, QuestionSubmit>
     implements QuestionSubmitService {
-    
+
     @Resource
     private QuestionService questionService;
 
+    @Autowired
+    private RedissonClient redissonClient;
+
     @Resource
     private UserFeignClient userFeignClient;
+
+    @Resource
+    private UidFeignClient uidFeignClient;
 
 //    @Resource
 //    @Lazy
@@ -70,33 +83,50 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         // 判断实体是否存在，根据类别获取实体
         Question question = questionService.getById(questionId);
         if (question == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "题目不存在");
         }
         // 是否已提交题目
         long userId = loginUser.getId();
-        // 每个用户串行提交题目
-        QuestionSubmit questionSubmit = new QuestionSubmit();
-        questionSubmit.setUserId(userId);
-        questionSubmit.setQuestionId(questionId);
-        questionSubmit.setCode(questionSubmitAddRequest.getCode());
-        questionSubmit.setLanguage(language);
-        // 设置初始状态
-        questionSubmit.setStatus(QuestionSubmitStatusEnum.WAITING.getValue());
-        questionSubmit.setJudgeInfo("{}");
-        boolean save = this.save(questionSubmit);
-        if (!save){
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "数据插入失败");
-        }
-        Long questionSubmitId = questionSubmit.getId();
-        // 发送消息
-        myMessageProducer.sendMessage("code_exchange", "my_routingKey", String.valueOf(questionSubmitId));
-        // 执行判题服务
-//        CompletableFuture.runAsync(() -> {
-//            judgeFeignClient.doJudge(questionSubmitId);
-//        });
-        return questionSubmitId;
-    }
 
+        // 接口防重复，保证五秒内用户对该题目的提交的请求只生效一个。
+        String key = CacheConstants.CODE_SUBMISSION_KEY_PREFIX + userId + ":" + questionId;
+        RLock lock = redissonClient.getLock(key);
+        try {
+            boolean isLocked = lock.tryLock(0, 5, TimeUnit.SECONDS);
+            if (!isLocked) {
+                throw new BusinessException(ErrorCode.API_REQUEST_ERROR, "系统繁忙，请稍后再试");
+            }
+            // 每个用户串行提交题目
+            QuestionSubmit questionSubmit = new QuestionSubmit();
+            questionSubmit.setUserId(userId);
+            questionSubmit.setQuestionId(questionId);
+            questionSubmit.setCode(questionSubmitAddRequest.getCode());
+            questionSubmit.setLanguage(language);
+            // 设置初始状态
+            questionSubmit.setStatus(QuestionSubmitStatusEnum.WAITING.getValue());
+            questionSubmit.setJudgeInfo("{}");
+            boolean save = this.save(questionSubmit);
+            if (!save) {
+                throw new BusinessException(ErrorCode.SYSTEM_ERROR, "数据插入失败");
+            }
+            Long questionSubmitId = questionSubmit.getId();
+            // 发送消息
+            QuestionSubmitMessage message = new QuestionSubmitMessage(uidFeignClient.generateUid(), questionSubmitId);
+            myMessageProducer.sendMessage("code_exchange", "my_routingKey", message);
+            // 执行判题服务
+            //        CompletableFuture.runAsync(() -> {
+            //            judgeFeignClient.doJudge(questionSubmitId);
+            //        });
+            return questionSubmitId;
+        }catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("系统繁忙，请稍后再试");
+        } finally {
+            if (lock.isHeldByCurrentThread()) {
+                lock.unlock();
+            }
+        }
+    }
 
     /**
      * 获取查询包装类（用户根据哪些字段查询，根据前端传来的请求对象，得到 mybatis 框架支持的查询 QueryWrapper 类）
