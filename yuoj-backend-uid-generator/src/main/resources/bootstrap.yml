@@ -1,6 +1,6 @@
 spring:
   application:
-    name: yuoj-backend-question-service
+    name: yuoj-backend-uid-generator
   profiles:
     active: dev
   # 支持 swagger3
