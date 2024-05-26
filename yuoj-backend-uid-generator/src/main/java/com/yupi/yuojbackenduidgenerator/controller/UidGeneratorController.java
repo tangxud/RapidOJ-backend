@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author tangx
  */
 @RestController
-@RequestMapping("/")
+@RequestMapping("/inner")
 public class UidGeneratorController implements UidFeignClient {
 
     @Autowired
