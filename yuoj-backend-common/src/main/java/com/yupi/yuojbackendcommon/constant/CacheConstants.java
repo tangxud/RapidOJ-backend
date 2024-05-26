@@ -8,6 +8,16 @@ package com.yupi.yuojbackendcommon.constant;
 public interface CacheConstants
 {
     /**
+     * 消息id缓存
+     */
+    String MESSAGE_ID_PREFIX = "code:submission:";
+
+    /**
+     * 题目提交缓存
+     */
+    String CODE_SUBMISSION_KEY_PREFIX = "code:submission:";
+
+    /**
      * 缓存有效期，默认720（分钟）
      */
     public final static long ACCESS_TOKEN_EXPIRATION = 720;

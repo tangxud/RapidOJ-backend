@@ -2,7 +2,7 @@
 //
 //import cn.hutool.core.convert.Convert;
 //import cn.hutool.core.date.DateTime;
-//import com.yupi.yuojbackendauth.service.RedisService;
+//import com.yupi.yuojbackendcommon.service.RedisService;
 //import com.yupi.yuojbackendauth.service.TokenService;
 //import com.yupi.yuojbackendcommon.utils.JwtUtil;
 //import com.yupi.yuojbackendcommon.utils.StringUtils;
