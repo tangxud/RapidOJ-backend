@@ -1,4 +1,4 @@
-package com.yupi.yuojbackendauth.config;
+package com.yupi.yuojbackendcommon.config;
 
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;

@@ -1,4 +1,4 @@
-package com.yupi.yuojbackendauth.service;
+package com.yupi.yuojbackendcommon.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundSetOperations;
