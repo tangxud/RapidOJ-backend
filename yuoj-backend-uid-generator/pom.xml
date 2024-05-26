@@ -8,7 +8,6 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.yupi</groupId>
     <artifactId>yuoj-backend-uid-generator</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>yuoj-backend-uid-generator</name>

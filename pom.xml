@@ -17,6 +17,7 @@
         <module>yuoj-backend-user-service</module>
         <module>yuoj-backend-judge-service</module>
         <module>yuoj-backend-auth</module>
+        <module>yuoj-backend-uid-generator</module>
     </modules>
     <properties>
         <java.version>1.8</java.version>
@@ -96,12 +97,24 @@
             <artifactId>commons-collections4</artifactId>
             <version>4.4</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-openapi2-spring-boot-starter</artifactId>
+            <version>4.3.0</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
         </dependency>
         <dependency>
             <groupId>com.mysql</groupId>
