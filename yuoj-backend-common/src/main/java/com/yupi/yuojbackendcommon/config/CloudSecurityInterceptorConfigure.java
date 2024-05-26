@@ -41,7 +41,9 @@ public class CloudSecurityInterceptorConfigure implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         // serverProtectInterceptor 拦截每一个路径
-        registry.addInterceptor(serverProtectInterceptor()).order(100).addPathPatterns("/**");
+        registry.addInterceptor(serverProtectInterceptor()).order(100)
+                .addPathPatterns("/**")
+                .excludePathPatterns("/**/inner/**");
 
         // userTokenInterceptor 排除指定的路径
         registry.addInterceptor(userTokenInterceptor()).order(200)

@@ -2,6 +2,7 @@ package com.yupi.yuojbackendauth.service;
 
 import cn.hutool.core.lang.UUID;
 import com.yupi.yuojbackendcommon.constant.SecurityConstants;
+import com.yupi.yuojbackendcommon.service.RedisService;
 import com.yupi.yuojbackendcommon.utils.JwtUtil;
 import com.yupi.yuojbackendcommon.utils.StringUtils;
 import com.yupi.yuojbackendmodel.model.entity.LoginUser;
@@ -102,8 +103,7 @@ public class TokenService {
                 loginUser = redisService.getCacheObject(getTokenKey(userkey));
                 return loginUser;
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             log.error("获取用户信息异常'{}'", e.getMessage());
         }

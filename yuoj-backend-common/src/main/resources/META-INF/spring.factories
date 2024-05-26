@@ -1,2 +1,6 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-   com.yupi.yuojbackendcommon.config.CloudSecurityAutoConfigure
+   com.yupi.yuojbackendcommon.config.CloudSecurityAutoConfigure,\
+   com.yupi.yuojbackendcommon.config.RabbitMQConfig,\
+   com.yupi.yuojbackendcommon.config.RedisConfig,\
+   com.yupi.yuojbackendcommon.service.RedisService,\
+   com.yupi.yuojbackendcommon.config.RedissonConfig

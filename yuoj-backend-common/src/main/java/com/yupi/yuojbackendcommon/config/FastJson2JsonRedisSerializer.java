@@ -1,4 +1,4 @@
-package com.yupi.yuojbackendauth.config;
+package com.yupi.yuojbackendcommon.config;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONReader;
@@ -8,6 +8,9 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 
 import static com.yupi.yuojbackendcommon.constant.CommonConstant.JSON_WHITELIST_STR;
 
+/**
+ * @author tangx
+ */
 public class FastJson2JsonRedisSerializer<T> implements RedisSerializer<T> {
     static final Filter autoTypeFilter = JSONReader.autoTypeFilter(
             // 按需加上需要支持自动类型的类名前缀，范围越小越安全
