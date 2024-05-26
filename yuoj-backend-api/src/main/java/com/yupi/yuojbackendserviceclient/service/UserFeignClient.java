@@ -1,6 +1,8 @@
 package com.yupi.yuojbackendserviceclient.service;
 
 import com.yupi.yuojbackendcommon.common.ErrorCode;
+import com.yupi.yuojbackendcommon.constant.SecurityConstants;
+import com.yupi.yuojbackendcommon.context.UserContextHolder;
 import com.yupi.yuojbackendcommon.exception.BusinessException;
 import com.yupi.yuojbackendmodel.model.entity.LoginUser;
 import com.yupi.yuojbackendmodel.model.entity.User;
@@ -17,8 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 import java.util.List;
-
-import static com.yupi.yuojbackendcommon.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
  * 用户服务
@@ -69,14 +69,18 @@ public interface UserFeignClient {
      * @return
      */
     default User getLoginUser(HttpServletRequest request) {
-        // 先判断是否已登录
-        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
-        User currentUser = (User) userObj;
-        if (currentUser == null || currentUser.getId() == null) {
+        LoginUser loginUser = (LoginUser) UserContextHolder.get(SecurityConstants.LOGIN_USER, LoginUser.class);
+        if (loginUser == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
         }
+        //        // 先判断是否已登录
+//        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+//        User currentUser = (User) userObj;
+//        if (currentUser == null || currentUser.getId() == null) {
+//            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+//        }
         // 可以考虑在这里做全局权限校验
-        return currentUser;
+        return loginUser.getUser();
     }
 
     /**
