@@ -1,0 +1,20 @@
+# 测试环境配置文件
+spring:
+  cloud:
+    sentinel:
+      transport:
+        dashboard: localhost:8180
+      scg: #配置限流之后，响应内容
+        fallback:
+          mode: response
+          response-status: 426
+          response-body: 限流了
+
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+      config:
+        server-addr: 127.0.0.1:8848
+        file-extension: yml
+        shared-configs:
+          - data-id: bootstrap-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}

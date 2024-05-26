@@ -1,18 +1,50 @@
-# Spring
+server:
+  port: 8101
+
 spring:
+  application:
+    name: yuoj-backend-gateway
+  main:
+    web-application-type: reactive
   profiles:
-    # 环境配置
     active: dev
   cloud:
-    nacos:
-      discovery:
-        # 服务注册地址
-        server-addr: 127.0.0.1:8848
-      config:
-        # 配置中心地址
-        server-addr: 127.0.0.1:8848
-        # 配置文件格式
-        file-extension: yml
-        # 共享配置
-        shared-configs:
-          - application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
+    gateway:
+      routes:
+        - id: yuoj-backend-user-service
+          uri: lb://yuoj-backend-user-service
+          predicates:
+            - Path=/api/user/**
+        - id: yuoj-backend-uid-generator
+          uri: lb://yuoj-backend-uid-generator
+          predicates:
+            - Path=/api/uid/**
+        - id: yuoj-backend-auth
+          uri: lb://yuoj-backend-auth
+          predicates:
+            - Path=/api/auth/**
+        - id: yuoj-backend-question-service
+          uri: lb://yuoj-backend-question-service
+          predicates:
+            - Path=/api/question/**
+        - id: yuoj-backend-judge-service
+          uri: lb://yuoj-backend-judge-service
+          predicates:
+            - Path=/api/judge/**
+      default-filters:
+        - name: AddBase64EncodedRequestHeader
+          args:
+            headerName: origin
+            value: gateway
+
+knife4j:
+  gateway:
+    # ① 第一个配置，开启gateway聚合组件
+    enabled: true
+    # ② 第二行配置，设置聚合模式采用discover服务发现的模式
+    strategy: discover
+    discover:
+      # ③ 第三行配置，开启discover模式
+      enabled: true
+      # ④ 第四行配置，聚合子服务全部为Swagger2规范的文档
+      version: swagger2
