@@ -1,7 +1,10 @@
 package com.yupi.yuojbackendgateway.filter;
 
 import cn.hutool.core.date.DateTime;
+import com.yupi.yuojbackendcommon.constant.CacheConstants;
+import com.yupi.yuojbackendcommon.service.RedisService;
 import com.yupi.yuojbackendcommon.utils.JwtUtil;
+import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +13,6 @@ import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -21,7 +23,6 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 import static com.yupi.yuojbackendcommon.constant.SecurityConstants.DETAILS_USER_ID;
 import static com.yupi.yuojbackendcommon.constant.SecurityConstants.USER_KEY;
@@ -34,7 +35,7 @@ public class GlobalAuthFilter implements GlobalFilter, Ordered {
     private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
     @Autowired
-    private StringRedisTemplate stringRedisTemplate;
+    private RedisService redisService;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -55,16 +56,20 @@ public class GlobalAuthFilter implements GlobalFilter, Ordered {
         }
 
         // 统一权限校验 JWT校验
+        // 获取token
         String accessToken = JwtUtil.replaceTokenPrefix(headers.getFirst(AUTHENTICATION));
         if (StringUtils.isBlank(accessToken) || !JwtUtil.isAccessTokenValid(accessToken)) {
-            return setResponse(response, HttpStatus.UNAUTHORIZED, "请重新登录", path);
+            return setResponse(response, HttpStatus.UNAUTHORIZED, "令牌不能为空", path);
         }
-
-        // 解析Token获取用户信息
-        Map<String, Object> claims = JwtUtil.parseToken(accessToken);
+        // 解析token，判断用户是否登录
+        Claims claims = JwtUtil.parseToken(accessToken);
+        String userKey = JwtUtil.getUserKey(claims);
+        boolean isLogin = redisService.hasKey(getTokenKey(userKey));
+        if (!isLogin)
+        {
+            return setResponse(response, HttpStatus.UNAUTHORIZED, "登录状态已过期", path);
+        }
         long userId = (long) claims.get(DETAILS_USER_ID);
-        String userKey = JwtUtil.getUserKey(accessToken);
-
         // 将用户信息添加到请求头中
         ServerHttpRequest modifiedRequest = serverHttpRequest.mutate()
                 .header(USER_KEY, userKey)
@@ -90,6 +95,14 @@ public class GlobalAuthFilter implements GlobalFilter, Ordered {
         DataBuffer dataBuffer = dataBufferFactory.wrap(message.getBytes(StandardCharsets.UTF_8));
         log.info("路径【{}】, 时间 【{}】，拦截成功", path, DateTime.now());
         return response.writeWith(Mono.just(dataBuffer));
+    }
+
+    /**
+     * 获取缓存key
+     */
+    private String getTokenKey(String token)
+    {
+        return CacheConstants.LOGIN_TOKEN_KEY + token;
     }
 
     /**
